@@ -36,5 +36,38 @@ Production-grade CRM built using Spring Boot Microservices, React, MySQL, JWT, R
 ## Frontend
 React + Vite + Material UI + React Query + Zustand
 
+## Service Repository Mapping
+Implementation repository: `DineshGupta-cloud/crm-microservices-services`
+
+Current implemented foundation:
+- Config Server
+- Eureka Discovery Server
+- API Gateway
+- Common Library
+- Auth Service
+
+Auth Service provides:
+- User, Role and Permission persistence
+- BCrypt password hashing
+- JWT access and refresh tokens
+- Stateless Spring Security authentication
+- Role and permission authorities
+- Registration, login and token refresh APIs
+- Default USER and ADMIN roles plus CRM permissions
+- Docker image definition
+- JWT unit tests
+
+## Core Runtime Ports
+| Service | Port |
+|---|---:|
+| Discovery Server | 8761 |
+| API Gateway | 8080 |
+| Auth Service | 8081 |
+
+## Auth API
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `POST /api/auth/refresh`
+
 ## Status
-Architecture repository initialized.
+Foundation implementation is synchronized with the services repository. Business services will be added in the order defined above, starting with Company and Organization management.
