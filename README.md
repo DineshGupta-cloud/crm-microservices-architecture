@@ -39,35 +39,46 @@ React + Vite + Material UI + React Query + Zustand
 ## Service Repository Mapping
 Implementation repository: `DineshGupta-cloud/crm-microservices-services`
 
-Current implemented foundation:
-- Config Server
-- Eureka Discovery Server
-- API Gateway
-- Common Library
-- Auth Service
+## Implementation Status
+| Service | Status | Port | Database |
+|---|---|---:|---|
+| Config Server | Implemented | 8888 | - |
+| Discovery Server | Implemented | 8761 | - |
+| API Gateway | Implemented | 8080 | - |
+| Common Library | Implemented | - | - |
+| Auth Service | Implemented | 8081 | crm_auth |
+| Company Service | Implemented | 8081* | crm_company |
+| Branch Service | Implemented | 8082 | crm_branch |
+| Department Service | Implemented | 8083 | crm_department |
+| Designation Service | Implemented | 8084 | crm_designation |
+| Employee Service | Implemented | 8085 | crm_employee |
+| Lead Service | Planned | - | crm_lead |
+| Customer Service | Planned | - | crm_customer |
+| Vendor Service | Planned | - | crm_vendor |
+| Product Service | Planned | - | crm_product |
+| Task Service | Planned | - | crm_task |
+| Notification Service | Planned | - | crm_notification |
+| Audit Service | Planned | - | crm_audit |
 
-Auth Service provides:
-- User, Role and Permission persistence
-- BCrypt password hashing
-- JWT access and refresh tokens
-- Stateless Spring Security authentication
-- Role and permission authorities
-- Registration, login and token refresh APIs
-- Default USER and ADMIN roles plus CRM permissions
-- Docker image definition
-- JWT unit tests
+\* Company Service should use a dedicated port when deployed alongside Auth Service; set `server.port` through environment/configuration before running both locally.
 
-## Core Runtime Ports
-| Service | Port |
-|---|---:|
-| Discovery Server | 8761 |
-| API Gateway | 8080 |
-| Auth Service | 8081 |
+## Organization APIs
+- `GET /api/v1/companies`
+- `POST /api/v1/companies`
+- `GET /api/v1/companies/{id}`
+- `PUT /api/v1/companies/{id}`
+- `DELETE /api/v1/companies/{id}`
+- `GET /api/v1/branches`
+- `POST /api/v1/branches`
+- `GET /api/v1/departments`
+- `POST /api/v1/departments`
+- `GET /api/v1/designations`
+- `POST /api/v1/designations`
+- `GET /api/v1/employees`
+- `POST /api/v1/employees`
 
-## Auth API
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `POST /api/auth/refresh`
+Organization hierarchy is represented using service-owned IDs rather than cross-database JPA relationships:
+`Company -> Branch -> Department -> Employee`, with `Designation` referenced by employee ID.
 
 ## Status
-Foundation implementation is synchronized with the services repository. Business services will be added in the order defined above, starting with Company and Organization management.
+Company, Branch, Department, Designation and Employee CRUD foundations are synchronized with the services repository. The next business-services layer is Lead and Customer management.
