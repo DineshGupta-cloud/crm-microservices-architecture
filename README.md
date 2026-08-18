@@ -1,84 +1,135 @@
 # Enterprise CRM Microservices Architecture
 
 ## Vision
-Production-grade CRM built using Spring Boot Microservices, React, MySQL, JWT, RBAC, Eureka, Gateway, Config Server and Docker.
+Production-oriented CRM built with Spring Boot microservices, React/Vite, MySQL, JWT/RBAC, Eureka, API Gateway, Config Server and Docker.
+
+## Repository Mapping
+
+Architecture: https://github.com/DineshGupta-cloud/crm-microservices-architecture
+Implementation: https://github.com/DineshGupta-cloud/crm-microservices-services
 
 ## Services
-- config-server
-- discovery-server
-- api-gateway
-- auth-service
-- user-service
-- company-service
-- branch-service
-- department-service
-- designation-service
-- employee-service
-- lead-service
-- customer-service
-- vendor-service
-- product-service
-- task-service
-- notification-service
-- audit-service
+
+| Service | Port | Database | Status |
+|---|---:|---|---|
+| config-server | 8888 | - | Foundation |
+| discovery-server | 8761 | - | Foundation |
+| api-gateway | 8080 | - | Foundation |
+| common-lib | - | - | Foundation |
+| auth-service | 8081 | auth_db | Implemented |
+| company-service | 8082 | company_db | Implemented |
+| branch-service | 8083 | branch_db | Implemented |
+| department-service | 8084 | department_db | Implemented |
+| designation-service | 8085 | designation_db | Implemented |
+| employee-service | 8086 | employee_db | Implemented |
+| lead-service | 8087 | lead_db | Implemented |
+| customer-service | 8088 | customer_db | Implemented |
+| vendor-service | 8089 | vendor_db | Implemented |
+| product-service | 8090 | product_db | Implemented |
+| task-service | 8091 | task_db | Implemented |
+| notification-service | 8092 | notification_db | Implemented |
+| audit-service | 8093 | audit_db | Implemented |
+
+## Architecture
+
+```text
+React / Vite
+     |
+     v
+API Gateway :8080
+     |
+     +-- Auth :8081 -------- auth_db
+     +-- Company :8082 ----- company_db
+     +-- Branch :8083 ------ branch_db
+     +-- Department :8084 -- department_db
+     +-- Designation :8085 - designation_db
+     +-- Employee :8086 ---- employee_db
+     +-- Lead :8087 -------- lead_db
+     +-- Customer :8088 ---- customer_db
+     +-- Vendor :8089 ------ vendor_db
+     +-- Product :8090 ----- product_db
+     +-- Task :8091 -------- task_db
+     +-- Notification :8092 notification_db
+     +-- Audit :8093 ------- audit_db
+
+Config Server + Eureka provide shared infrastructure.
+```
+
+## Business Domains
+
+```text
+Company
+  -> Branch
+      -> Department
+          -> Employee
+              -> Designation
+
+Lead -> Customer
+Customer -> Product / Task
+Task -> Notification
+All business services -> Audit
+```
+
+Cross-service relationships are represented by IDs. Services do not directly access another service's database.
+
+## Implemented APIs
+
+```text
+/api/auth/*
+/api/v1/companies
+/api/v1/branches
+/api/v1/departments
+/api/v1/designations
+/api/v1/employees
+/api/v1/leads
+/api/v1/customers
+/api/v1/vendors
+/api/v1/products
+/api/v1/tasks
+/api/v1/notifications
+/api/v1/audits
+```
+
+CRUD services expose GET, GET by ID, POST, PUT and DELETE where appropriate. Notification supports user listing and read status; Audit supports global and entity-specific history.
 
 ## Architecture Principles
+
 - Database per service
-- JWT Authentication
-- Role Based Access Control
-- API Gateway Routing
-- Centralized Configuration
-- Service Discovery
-- OpenAPI Documentation
-- Docker Ready
-- Event Driven Extension Ready
+- JWT authentication
+- RBAC and permissions
+- API Gateway routing
+- Centralized configuration
+- Eureka service discovery
+- DTO/API boundaries
+- Validation and consistent errors
+- REST for synchronous communication
+- Event-driven extension ready
+- Docker ready
+- OpenAPI/Swagger ready for service documentation
 
-## Frontend
-React + Vite + Material UI + React Query + Zustand
+## Technology
 
-## Service Repository Mapping
-Implementation repository: `DineshGupta-cloud/crm-microservices-services`
+- Java 17
+- Spring Boot 3.4.x
+- Spring Cloud 2024.x
+- Spring Security
+- JJWT
+- Spring Data JPA
+- MySQL 8
+- Maven
+- Docker
+- React/Vite
 
-## Implementation Status
-| Service | Status | Port | Database |
-|---|---|---:|---|
-| Config Server | Implemented | 8888 | - |
-| Discovery Server | Implemented | 8761 | - |
-| API Gateway | Implemented | 8080 | - |
-| Common Library | Implemented | - | - |
-| Auth Service | Implemented | 8081 | crm_auth |
-| Company Service | Implemented | 8081* | crm_company |
-| Branch Service | Implemented | 8082 | crm_branch |
-| Department Service | Implemented | 8083 | crm_department |
-| Designation Service | Implemented | 8084 | crm_designation |
-| Employee Service | Implemented | 8085 | crm_employee |
-| Lead Service | Planned | - | crm_lead |
-| Customer Service | Planned | - | crm_customer |
-| Vendor Service | Planned | - | crm_vendor |
-| Product Service | Planned | - | crm_product |
-| Task Service | Planned | - | crm_task |
-| Notification Service | Planned | - | crm_notification |
-| Audit Service | Planned | - | crm_audit |
+## Build
 
-\* Company Service should use a dedicated port when deployed alongside Auth Service; set `server.port` through environment/configuration before running both locally.
+From the services repository:
 
-## Organization APIs
-- `GET /api/v1/companies`
-- `POST /api/v1/companies`
-- `GET /api/v1/companies/{id}`
-- `PUT /api/v1/companies/{id}`
-- `DELETE /api/v1/companies/{id}`
-- `GET /api/v1/branches`
-- `POST /api/v1/branches`
-- `GET /api/v1/departments`
-- `POST /api/v1/departments`
-- `GET /api/v1/designations`
-- `POST /api/v1/designations`
-- `GET /api/v1/employees`
-- `POST /api/v1/employees`
+```bash
+mvn clean install
+```
 
-Organization hierarchy is represented using service-owned IDs rather than cross-database JPA relationships:
-`Company -> Branch -> Department -> Employee`, with `Designation` referenced by employee ID.
+Start infrastructure first, then Auth and business services.
 
-## Status
-Company, Branch, Department, Designation and Employee CRUD foundations are synchronized with the services repository. The next business-services layer is Lead and Customer management.
+## Important
+
+The source code is committed to the implementation repository. A successful production release still requires running the Maven build, integration tests, database provisioning/migrations, secret configuration and deployment verification in the target environment.
